@@ -1,0 +1,48 @@
+<div>
+  <h2>Patient Information Query</h2>
+  <input type="text" [(ngModel)]="patientId" placeholder="Input PatientID" required>
+  <button (click)="queryPatient()">Search Patient ID</button>
+  <button (click)="exportToExcel()" [disabled]="!patientData || patientData.length === 0">
+    export Excel
+  </button>
+
+</div>
+
+<div *ngIf="errorMessage" style="color: red;">
+  Error: {{ errorMessage }}
+</div>
+
+<!-- 只有在有数据并且数组长度大于0时才显示表格 -->
+<table *ngIf="patientData?.length > 0" border="1">
+  <thead>
+  <tr>
+    <!-- 表头 (同样假设数组中每个对象结构相同，以第一个对象获取keys为表头) -->
+    <th *ngFor="let key of getObjectKeys(patientData[0])">{{ key }}</th>
+  </tr>
+  </thead>
+  <tbody>
+  <!-- 遍历病人数组 -->
+  <tr *ngFor="let patient of patientData">
+    <td *ngFor="let key of getObjectKeys(patient)">{{ patient[key] }}</td>
+  </tr>
+  </tbody>
+</table>
+
+<!-- 数据数组为空时显示提示 -->
+<div *ngIf="patientData && patientData.length === 0">
+  <p>Not find patient</p>
+</div>
+
+<!--
+<table *ngIf="patientData" border="1">
+  <thead>
+  <tr>
+    <th *ngFor="let key of getObjectKeys(patientData)">{{key}}</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td *ngFor="let key of getObjectKeys(patientData)">{{patientData[key]}}</td>
+  </tr>
+  </tbody>
+</table>-->
