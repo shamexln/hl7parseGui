@@ -1,2 +1,22 @@
-<h1>HL7 Parse Tool</h1>
-<router-outlet></router-outlet>
+<!--<h1>HL7 Parse Tool</h1>-->
+<div class="odx-app">
+  <odx-header>
+    <button odxButton odxMainMenuButton>
+      <odx-icon name="menu" />
+    </button>
+  </odx-header>
+  <odx-main-menu
+    [title]="title"
+    [subtitle]="subtitle"
+    [copyright]="copyright"
+    [disabled]=false
+    [isOpen]=true
+  >
+  </odx-main-menu>
+  <main class="odx-app-main">
+    <router-outlet></router-outlet>
+  </main>
+</div>
+
+
+

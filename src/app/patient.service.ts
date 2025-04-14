@@ -18,11 +18,38 @@ export class PatientService {
     );
   }
 
+  getPaginatedPatientById(id: string, page: number, pageSize: number): Observable<any> {
+    const url = `${this.apiUrl}/${encodeURIComponent(id)}/paginated`;
+
+    return this.http.get<any | any[]>(url,{
+        params: {
+          page: page.toString(),
+          pageSize: pageSize.toString()
+        }
+      }
+    ).pipe(
+      map((response: any | any[]) => Array.isArray(response) ? response : [response]), // 确保总是返回数组
+      tap((data:any|any[]) => console.log('获取到的病人数据:', data)), // 添加这一行用于输出日志
+      catchError(this.handleError)
+    );
+
+  }
+  exportAllDataToExcel(id: string): Observable<Blob> {
+    const url = `${this.apiUrl}/${encodeURIComponent(id)}/export`;
+
+    return this.http.get(url, {
+      responseType: 'blob'
+    }).pipe(
+      tap(() => console.log('成功获取病人数据EXCEL文档')),
+      catchError(this.handleError)
+    );
+  }
 
 
   private handleError(error: HttpErrorResponse) {
     const message = error.error?.message || error.statusText || 'Unknown error';
     return throwError(() => new Error(`请求失败：${message}`));
   }
+
 
 }
