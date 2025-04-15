@@ -5,8 +5,11 @@
   <div  odxLayout="grid" >
   <input type="text" [(ngModel)]="patientId" placeholder="Input PatientID" required>
   <button odxButton (click)="queryPatient(1)">Search Patient ID</button>
-  <button odxButton (click)="exportToExcel()" [disabled]="!patientData() || patientData().length === 0">
-    export Excel
+<!--  <button odxButton (click)="exportToExcel()" [disabled]="!patientData() || patientData().length === 0">
+    export current to Excel
+  </button>-->
+  <button odxButton (click)="exportAllDataToExcel()" [disabled]="!patientData() || patientData().length === 0">
+    export all to Excel
   </button>
   <label for="pageSizeSelect"> Items per page: </label>
   <select id="pageSizeSelect" [(ngModel)]="pageSize" (change)="handlePageSizeChange()">

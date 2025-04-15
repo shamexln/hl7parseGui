@@ -18,8 +18,11 @@ export class PatientService {
     );
   }
 
-  getPaginatedPatientById(id: string, page: number, pageSize: number): Observable<any> {
-    const url = `${this.apiUrl}/${encodeURIComponent(id)}/paginated`;
+  getPaginatedPatientById(id: string | null | undefined, page: number, pageSize: number): Observable<any> {
+    const url = id
+      ? `${this.apiUrl}/paginated/${encodeURIComponent(id)}`
+      : `${this.apiUrl}/paginated`;
+
 
     return this.http.get<any | any[]>(url,{
         params: {
@@ -34,8 +37,11 @@ export class PatientService {
     );
 
   }
-  exportAllDataToExcel(id: string): Observable<Blob> {
-    const url = `${this.apiUrl}/${encodeURIComponent(id)}/export`;
+  exportAllDataToExcel(id?: string | null ): Observable<Blob> {
+    const url = id
+      ? `${this.apiUrl}/export/${encodeURIComponent(id)}`
+      : `${this.apiUrl}/export`;
+
 
     return this.http.get(url, {
       responseType: 'blob'

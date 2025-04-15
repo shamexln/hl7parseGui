@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "mpw": {
+    "hl7parsegui": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,10 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/mpw",
+            "allowedCommonJsDependencies": [
+              "file-saver"
+            ],
+            "outputPath": "dist/hl7parsegui",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -59,10 +62,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "mpw:build:production"
+              "buildTarget": "hl7parsegui:build:production"
             },
             "development": {
-              "buildTarget": "mpw:build:development"
+              "buildTarget": "hl7parsegui:build:development"
             }
           },
           "defaultConfiguration": "development"

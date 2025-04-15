@@ -3,14 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { PatientService } from '../patient.service';
 import { CommonModule } from '@angular/common';
-import * as XLSX from 'xlsx';
+//import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { ButtonComponent } from  '@odx/angular/components/button';
 import { MainMenuModule } from  '@odx/angular/components/main-menu';
-import {IconComponent} from '@odx/angular/components/icon';
-import {HeaderComponent} from '@odx/angular/components/header';
 import {AreaHeaderComponent} from '@odx/angular/components/area-header';
-import {ActionGroupComponent} from '@odx/angular/components/action-group';
 import { TableVariant } from '@odx/angular/components/table';
 import {DataTableModule} from '@odx/angular/components/data-table';
 import { PageChangeEvent, PaginatorModule } from '@odx/angular/components/paginator';
@@ -54,10 +51,7 @@ interface TableData {
     ButtonComponent,
     MainMenuModule,
     HttpClientModule,
-    IconComponent,
-    HeaderComponent,
     AreaHeaderComponent,
-    ActionGroupComponent,
     DataTableModule,
     PaginatorModule
   ],
@@ -208,19 +202,7 @@ export class PatientComponent {
     this.queryPatient(this.page);
   }
 
-/*
-  changePage(newPage: number) {
-    if (newPage >= 1 && newPage <= this.totalPages) {
-      this.queryPatient(newPage);
-    }
-  }
-
-  getObjectKeys(obj: any): string[] {
-    return Object.keys(obj);
-  }
-*/
-
-  // 导出方法
+  /*// 导出方法
   exportToExcel(): void {
     const data = this.patientData();
     if (!data || data.length === 0)
@@ -243,7 +225,7 @@ export class PatientComponent {
     const data: Blob = new Blob([buffer], { type: EXCEL_TYPE });
     saveAs(data, `${fileName}_${new Date().getTime()}.${EXCEL_EXTENSION}`);
   }
-
+*/
   exportAllDataToExcel() {
     this.patientService.exportAllDataToExcel(this.patientId).subscribe({
       next: (blobData: Blob) => {
