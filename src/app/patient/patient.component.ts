@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component , computed, input, signal} from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {ChangeDetectionStrategy, Component, computed, Input, input, OnDestroy, OnInit, signal} from '@angular/core';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { PatientService } from '../patient.service';
 import { CommonModule } from '@angular/common';
-//import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { ButtonComponent } from  '@odx/angular/components/button';
 import { MainMenuModule } from  '@odx/angular/components/main-menu';
@@ -11,6 +10,10 @@ import {AreaHeaderComponent} from '@odx/angular/components/area-header';
 import { TableVariant } from '@odx/angular/components/table';
 import {DataTableModule} from '@odx/angular/components/data-table';
 import { PageChangeEvent, PaginatorModule } from '@odx/angular/components/paginator';
+import {FormFieldComponent, FormFieldVariant} from '@odx/angular/components/form-field';
+import {DatepickerModule} from '@odx/angular/components/datepicker';
+import {SelectComponent, SelectModule, SelectOptionComponent} from '@odx/angular/components/select';
+import {Subscription} from 'rxjs';
 
 interface TableData {
   row_id: string;
@@ -32,15 +35,19 @@ interface TableData {
   param_uom: string;
   param_upper_lim: string;
   param_lower_lim: string;
-  'Limit Violation Type': string;
-  'Limit Violation Value': string;
+  Limit_Violation_Type: string;
+  Limit_Violation_Value: string;
   onset_tick: string;
   alarm_duration: string;
   'change_time(UTC)': string;
   change_tick: string;
   aborted: string;
 }
-
+interface OptionValue {
+  label: string;
+  value: number;
+  disabled: boolean;
+}
 @Component({
   selector: 'app-patient',
   standalone: true,
@@ -53,20 +60,72 @@ interface TableData {
     HttpClientModule,
     AreaHeaderComponent,
     DataTableModule,
-    PaginatorModule
+    PaginatorModule,
+    FormFieldComponent,
+    DatepickerModule,
+    SelectOptionComponent,
+    SelectComponent,
+    SelectModule,
+    ReactiveFormsModule
   ],
   templateUrl: './patient.component.html',
   styleUrls: ['./patient.component.css']
 })
-export class PatientComponent {
+export class PatientComponent implements OnInit, OnDestroy {
+  selectOptions:OptionValue[] = [
+    { value: 5, label: '5', disabled: false },
+    { value: 10, label: '10', disabled: false },
+    { value: 20, label: '20', disabled: false },
+    { value: 50, label: '50', disabled: false },
+    { value: 100, label: '100', disabled: false }
+  ];
+  pageSizeValue = this.selectOptions[1];
+  startDate: string = new Date().toISOString().slice(0, 10);
+  endDate: string = new Date().toISOString().slice(0, 10);
   patientId = '';
   patientData = signal<any[]>([]);
   errorMessage = '';
   page = 1;
-  pageSize = 20;
+  pageSize =  this.pageSizeValue.value;
   totalPages = 0;
   totalItems = 0;
   previousPageIndex = 0; // 默认第一页索引通常为0
+  fieldstyle = FormFieldVariant.SIMPLE;
+
+  formGroup = new FormGroup({
+    patientId: new FormControl(this.patientId, [Validators.required]),
+    startdate: new FormControl(new Date(), [Validators.required]),
+    enddate: new FormControl(new Date(), [Validators.required]),
+    pageSizeValue: new FormControl(this.pageSizeValue, [Validators.required]),});
+
+  dateStr = "2025-04-06T16:00:00.000Z";
+
+  constructor(private patientService: PatientService) {
+
+  }
+  private subscription = new Subscription();
+
+  // 在组件初始化时添加以下代码
+  ngOnInit() {
+    this.formGroup.get('startdate')?.setValue(new Date(this.dateStr));
+   /* this.subscription.add(
+      this.formGroup.get('startdate')?.valueChanges.subscribe(value => {
+        // 监听startdate的值变化
+        this.formGroup.get('startdate')?.valueChanges.subscribe(value => {
+          console.log('Date changed:', value);
+          // 可以在这里做额外处理，如格式化等
+          if (value) {
+            this.startDate = value instanceof Date
+              ? value.toISOString().split('T')[0]
+              : typeof value === 'string' ? value : '';
+          }
+        });
+      })
+    );*/
+  }
+  ngOnDestroy() {
+    /*this.subscription.unsubscribe();*/
+  }
 
   public variantValue = TableVariant.DEFAULT;
 
@@ -97,8 +156,8 @@ export class PatientComponent {
           param_uom: patient.param_uom || '',
           param_upper_lim: patient.param_upper_lim || '',
           param_lower_lim: patient.param_lower_lim || '',
-          'Limit Violation Type': patient['Limit Violation Type'] || '',
-          'Limit Violation Value': patient['Limit Violation Value'] || '',
+          Limit_Violation_Type: patient.Limit_Violation_Type || '',
+          Limit_Violation_Value: patient.Limit_Violation_Value || '',
           onset_tick: patient.onset_tick || '',
           alarm_duration: patient.alarm_duration || '',
           'change_time(UTC)': patient['change_time(UTC)'] || '',
@@ -125,17 +184,30 @@ export class PatientComponent {
 
   public displayedColumns = ['row_id','device_id','local_time', 'Date', 'Time', 'Hour', 'bed_label', 'pat_ID', 'mon_unit',
     'care_unit', 'alarm_grade', 'alarm_state', 'Alarm Grade 2', 'alarm_message', 'param_id', 'param_value',
-    'param_uom', 'param_upper_lim', 'param_lower_lim', 'Limit Violation Type', 'Limit Violation Value',
+    'param_uom', 'param_upper_lim', 'param_lower_lim', 'Limit_Violation_Type', 'Limit_Violation_Value',
     'onset_tick', 'alarm_duration', 'change_time(UTC)', 'change_tick', 'aborted'];
 
 
 
-  constructor(private patientService: PatientService) {}
+  @Input()
+  stringify = (item: OptionValue | null): string => {
+    return item?.label ?? '';
+  };
+
+
+  @Input()
+  identityMatcher = (item1: OptionValue | null, item2: OptionValue | null): boolean => {
+    if (item1 == null || item2 == null) {
+      return false; // 或其他逻辑
+    }
+    return item1.value === item2.value;
+  };
+
 
   queryPatient(page: number = 1) {
     this.errorMessage = '';
     this.patientData.set([]);
-    this.patientService.getPaginatedPatientById(this.patientId, page, this.pageSize).subscribe({
+    this.patientService.getPaginatedPatientById(this.patientId, page, this.pageSize, this.startDate, this.endDate).subscribe({
       next: (data) => {
         const result = Array.isArray(data) && data.length > 0 ? data[0] : null;
         if (result) {
@@ -195,52 +267,25 @@ export class PatientComponent {
     this.queryPatient(this.page); // 调用API重新加载对应页的数据
   }
 
-
   handlePageSizeChange() {
     // 当用户更改每页数量时，重置到第一页并重新加载数据
+    this.pageSize = this.pageSizeValue.value;
     this.page = 1;
     this.queryPatient(this.page);
   }
 
-  /*// 导出方法
-  exportToExcel(): void {
-    const data = this.patientData();
-    if (!data || data.length === 0)
-    {
-      alert('没有可导出的数据！');
-      return;
-    }
-
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-    const workbook: XLSX.WorkBook = {
-      Sheets: { 'data': worksheet },
-      SheetNames: ['data']
-    };
-
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    this.saveAsExcelFile(excelBuffer, "patients_data");
-  }
-
-  private saveAsExcelFile(buffer: any, fileName: string): void {
-    const data: Blob = new Blob([buffer], { type: EXCEL_TYPE });
-    saveAs(data, `${fileName}_${new Date().getTime()}.${EXCEL_EXTENSION}`);
-  }
-*/
   exportAllDataToExcel() {
-    this.patientService.exportAllDataToExcel(this.patientId).subscribe({
+    this.patientService.exportAllDataToExcel(this.patientId, this.startDate, this.endDate).subscribe({
       next: (blobData: Blob) => {
         const fileName = 'patients_data';
         saveAs(blobData, `${fileName}_${new Date().getTime()}.${EXCEL_EXTENSION}`);
       },
       error: (err) => {
-        console.error('导出所有数据失败', err);
-        alert('导出所有数据失败！');
+        console.error('export to database fail', err);
+        alert('export all data fail！');
       }
     });
   }
-
-
-
 }
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = 'xlsx';
