@@ -10,7 +10,7 @@
         >
           <input
             type="text"
-            formControlName="patientId"
+            formControlName="patientid"
             [attr.placeholder]=" 'Input PatientID' "
             odxFormFieldControl
             required (keyup.enter)="queryPatient(1)"
@@ -70,21 +70,6 @@
           </odx-select>
 
         </odx-form-field>
-    <!--    <input type="text" [(ngModel)]="patientId" name="patientId" placeholder="Input PatientID" required (keyup.enter)="queryPatient(1)">
-        <input type="date" [(ngModel)]="startTime" name="startTime" placeholder="Start Date" />
-        <input type="date" [(ngModel)]="endTime" name="endTime" placeholder="End Date" />
-        <button odxButton (click)="queryPatient(1)">Search Patient ID</button>
-        <button odxButton (click)="exportAllDataToExcel()" [disabled]="!patientData() || patientData().length === 0">
-          export all to Excel
-        </button>
-        <label for="pageSizeSelect"> Items per page: </label>
-        <select id="pageSizeSelect" [(ngModel)]="pageSize" name="pageSize" (change)="handlePageSizeChange()">
-          <option [value]="5">5</option>
-          <option [value]="10">10</option>
-          <option [value]="20">20</option>
-          <option [value]="50">50</option>
-          <option [value]="100">100</option>
-        </select>-->
       </form>
 
       <div class="grid-container">
@@ -194,6 +179,11 @@
             <ng-container odxColumnDef="Limit_Violation_Value">
               <th odxHeaderCell *odxHeaderCellDef>Limit Violation Value</th>
               <td odxCell *odxCellDef="let element">{{ element.Limit_Violation_Value }}</td>
+            </ng-container>
+
+            <ng-container odxColumnDef="sourcechannel">
+              <th odxHeaderCell *odxHeaderCellDef>Alarm Source</th>
+              <td odxCell *odxCellDef="let element">{{ element.sourcechannel }}</td>
             </ng-container>
 
             <ng-container odxColumnDef="onset_tick">

@@ -37,6 +37,7 @@ interface TableData {
   param_lower_lim: string;
   Limit_Violation_Type: string;
   Limit_Violation_Value: string;
+  sourcechannel: string;
   onset_tick: string;
   alarm_duration: string;
   'change_time(UTC)': string;
@@ -71,7 +72,7 @@ interface OptionValue {
   templateUrl: './patient.component.html',
   styleUrls: ['./patient.component.css']
 })
-export class PatientComponent implements OnInit, OnDestroy {
+export class PatientComponent {
   selectOptions:OptionValue[] = [
     { value: 5, label: '5', disabled: false },
     { value: 10, label: '10', disabled: false },
@@ -80,9 +81,6 @@ export class PatientComponent implements OnInit, OnDestroy {
     { value: 100, label: '100', disabled: false }
   ];
   pageSizeValue = this.selectOptions[1];
-  startDate: string = new Date().toISOString().slice(0, 10);
-  endDate: string = new Date().toISOString().slice(0, 10);
-  patientId = '';
   patientData = signal<any[]>([]);
   errorMessage = '';
   page = 1;
@@ -93,41 +91,18 @@ export class PatientComponent implements OnInit, OnDestroy {
   fieldstyle = FormFieldVariant.SIMPLE;
 
   formGroup = new FormGroup({
-    patientId: new FormControl(this.patientId, [Validators.required]),
+    patientid: new FormControl('', [Validators.required]),
     startdate: new FormControl(new Date(), [Validators.required]),
     enddate: new FormControl(new Date(), [Validators.required]),
     pageSizeValue: new FormControl(this.pageSizeValue, [Validators.required]),});
 
-  dateStr = "2025-04-06T16:00:00.000Z";
 
   constructor(private patientService: PatientService) {
 
   }
   private subscription = new Subscription();
 
-  // 在组件初始化时添加以下代码
-  ngOnInit() {
-    this.formGroup.get('startdate')?.setValue(new Date(this.dateStr));
-   /* this.subscription.add(
-      this.formGroup.get('startdate')?.valueChanges.subscribe(value => {
-        // 监听startdate的值变化
-        this.formGroup.get('startdate')?.valueChanges.subscribe(value => {
-          console.log('Date changed:', value);
-          // 可以在这里做额外处理，如格式化等
-          if (value) {
-            this.startDate = value instanceof Date
-              ? value.toISOString().split('T')[0]
-              : typeof value === 'string' ? value : '';
-          }
-        });
-      })
-    );*/
-  }
-  ngOnDestroy() {
-    /*this.subscription.unsubscribe();*/
-  }
-
-  public variantValue = TableVariant.DEFAULT;
+  public variantValue = TableVariant.STRIPED;
 
   private filteredData(): TableData[] {
     const data: TableData[] = [];
@@ -158,6 +133,7 @@ export class PatientComponent implements OnInit, OnDestroy {
           param_lower_lim: patient.param_lower_lim || '',
           Limit_Violation_Type: patient.Limit_Violation_Type || '',
           Limit_Violation_Value: patient.Limit_Violation_Value || '',
+          sourcechannel: patient.sourcechannel || '',
           onset_tick: patient.onset_tick || '',
           alarm_duration: patient.alarm_duration || '',
           'change_time(UTC)': patient['change_time(UTC)'] || '',
@@ -184,7 +160,7 @@ export class PatientComponent implements OnInit, OnDestroy {
 
   public displayedColumns = ['row_id','device_id','local_time', 'Date', 'Time', 'Hour', 'bed_label', 'pat_ID', 'mon_unit',
     'care_unit', 'alarm_grade', 'alarm_state', 'Alarm Grade 2', 'alarm_message', 'param_id', 'param_value',
-    'param_uom', 'param_upper_lim', 'param_lower_lim', 'Limit_Violation_Type', 'Limit_Violation_Value',
+    'param_uom', 'param_upper_lim', 'param_lower_lim', 'Limit_Violation_Type', 'Limit_Violation_Value', 'sourcechannel',
     'onset_tick', 'alarm_duration', 'change_time(UTC)', 'change_tick', 'aborted'];
 
 
@@ -207,7 +183,14 @@ export class PatientComponent implements OnInit, OnDestroy {
   queryPatient(page: number = 1) {
     this.errorMessage = '';
     this.patientData.set([]);
-    this.patientService.getPaginatedPatientById(this.patientId, page, this.pageSize, this.startDate, this.endDate).subscribe({
+
+    const { patientid, startdate, enddate } = this.formGroup.value;
+    // @ts-ignore
+    const formattedStartDate = formatDateToSql(startdate);
+    // @ts-ignore
+    const formattedEndDate = formatDateToSql(enddate);
+
+    this.patientService.getPaginatedPatientById(patientid, page, this.pageSize, formattedStartDate, formattedEndDate).subscribe({
       next: (data) => {
         const result = Array.isArray(data) && data.length > 0 ? data[0] : null;
         if (result) {
@@ -275,7 +258,12 @@ export class PatientComponent implements OnInit, OnDestroy {
   }
 
   exportAllDataToExcel() {
-    this.patientService.exportAllDataToExcel(this.patientId, this.startDate, this.endDate).subscribe({
+    const { patientid, startdate, enddate } = this.formGroup.value;
+    // @ts-ignore
+    const formattedStartDate = formatDateToSql(startdate);
+    // @ts-ignore
+    const formattedEndDate = formatDateToSql(enddate);
+    this.patientService.exportAllDataToExcel(patientid, formattedStartDate, formattedEndDate).subscribe({
       next: (blobData: Blob) => {
         const fileName = 'patients_data';
         saveAs(blobData, `${fileName}_${new Date().getTime()}.${EXCEL_EXTENSION}`);
@@ -289,3 +277,7 @@ export class PatientComponent implements OnInit, OnDestroy {
 }
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = 'xlsx';
+function formatDateToSql(date: Date): string {
+  return date.toISOString().slice(0, 10).replace('T', ' ');
+}
+

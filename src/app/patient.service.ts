@@ -50,7 +50,8 @@ export class PatientService {
     if (endTime) params = params.set('endTime', endTime);
 
     return this.http.get(url, {
-      responseType: 'blob'
+      responseType: 'blob',
+      params
     }).pipe(
       tap(() => console.log('get excel file successfully')),
       catchError(this.handleError)
