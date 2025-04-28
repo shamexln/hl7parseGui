@@ -14,6 +14,17 @@
   >
   </odx-main-menu>
   <main class="odx-app-main">
+    <aside class="odx-app-sidebar">
+      <odx-rail-navigation #railNavigation>
+        <a odxRailNavigationItem iconName="placeholder" [routerLink]="['/patient-query']" >
+          Patient Query
+        </a>
+        <a odxRailNavigationItem iconName="placeholder" [routerLink]="['/config']" >
+          Configuration
+        </a>
+
+      </odx-rail-navigation>
+    </aside>
     <router-outlet></router-outlet>
   </main>
 </div>

@@ -1,17 +1,17 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import {RouterLink, RouterOutlet} from '@angular/router';
 import {HeaderComponent} from '@odx/angular/components/header';
 import {ButtonComponent} from '@odx/angular/components/button';
 import {IconComponent} from '@odx/angular/components/icon';
-import {MainMenuButtonDirective, MainMenuComponent} from '@odx/angular/components/main-menu';
 import { MainMenuModule } from  '@odx/angular/components/main-menu';
+import {RailNavigationModule} from '@odx/angular/components/rail-navigation';
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, HeaderComponent, ButtonComponent, IconComponent, MainMenuButtonDirective, MainMenuComponent, MainMenuModule],
+  imports: [CommonModule, RouterOutlet, HeaderComponent, ButtonComponent, IconComponent, MainMenuModule, RailNavigationModule, RouterLink],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
   host: {
