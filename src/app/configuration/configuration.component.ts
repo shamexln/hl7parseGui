@@ -4,15 +4,18 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { CardModule} from '@odx/angular/components/card';
 import {AreaHeaderComponent} from '@odx/angular/components/area-header';
-
+import {ButtonComponent, ButtonVariant} from '@odx/angular/components/button';
 @Component({
   selector: 'app-configuration',
   standalone: true,
-  imports: [CommonModule, FormsModule, CardModule, AreaHeaderComponent],
+  imports: [CommonModule, FormsModule, CardModule, AreaHeaderComponent, ButtonComponent],
   templateUrl: './configuration.component.html',
   styleUrl: './configuration.component.css'
 })
 export class ConfigurationComponent implements OnInit {
+
+  public variantValue = ButtonVariant.HIGHLIGHT;
+
   // HL7 Server Configuration
   port: string = '3359';
   savedPort: string = '3359';

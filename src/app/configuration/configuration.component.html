@@ -8,7 +8,7 @@
       <div class="card-header">
         <h3>HL7 Parse Tool Server</h3>
         <div class="card-actions" *ngIf="!isHttpEditing">
-          <button class="edit-button" (click)="startHttpEditing()">Edit</button>
+          <button odxButton [variant]="variantValue" (click)="startHttpEditing()">Edit</button>
         </div>
       </div>
       <div class="card-content">
@@ -55,7 +55,7 @@
       <div class="card-header">
         <h3>HL7 Receiver</h3>
         <div class="card-actions" *ngIf="!isEditing">
-          <button class="edit-button" (click)="startEditing()">Edit</button>
+          <button odxButton [variant]="variantValue" (click)="startEditing()">Edit</button>
         </div>
       </div>
       <div class="card-content">

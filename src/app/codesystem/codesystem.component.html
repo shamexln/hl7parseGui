@@ -1,0 +1,14 @@
+<div class="odx-app-page">
+  <odx-area-header size="large">
+    Code System
+  </odx-area-header>
+<div odxLayout="grid">
+  @for (btn of codesystems; let i = $index; track i) {
+    <button odxButton [variant]="variantValue"
+    >
+      Tab {{ i + 1 }}
+    </button>
+  }
+
+</div>
+</div>
