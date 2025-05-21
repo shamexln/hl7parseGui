@@ -2,12 +2,116 @@
   display: flex;
   flex-direction: column;
   height: 100%; /* Ensure the container takes up the full height */
+  width: 100%; /* Ensure the container takes up the full width */
+  overflow-x: hidden; /* Hide horizontal overflow at the container level */
 }
 
 .grid-container > div {
   flex: 1; /* The table container will grow to fill available space */
   max-height: 70vh; /* Use max-height for a flexible height */
   overflow-y: auto; /* Explicitly enable vertical scrolling */
-
+  overflow-x: auto; /* Enable horizontal scrolling for wide tables */
+  width: 100%; /* Ensure the container takes up the full width */
+  position: relative; /* Establish positioning context */
 }
 
+/* Set max-width for table cells and show ellipsis for overflow */
+td[odxCell] {
+  max-width: 150px; /* Default maximum width for all cells */
+  white-space: nowrap; /* Prevent text from wrapping */
+  overflow: hidden; /* Hide overflow content */
+  text-overflow: ellipsis; /* Show ellipsis for overflow */
+  padding: 0 8px; /* Add some padding for better appearance */
+}
+
+/* Add column-specific styles using Angular Material class naming convention */
+/* For device_id column */
+.cdk-column-device_id {
+  max-width: 200px !important;
+}
+
+/* For alarm_message column */
+.cdk-column-alarm_message {
+  max-width: 250px !important;
+}
+
+/* For date and time columns */
+.cdk-column-local_time,
+.cdk-column-Date,
+.cdk-column-Time {
+  max-width: 120px !important;
+}
+
+/* For columns with potentially long text */
+.cdk-column-mon_unit,
+.cdk-column-care_unit {
+  max-width: 200px !important;
+}
+
+/* Column-specific styles using odx-specific selectors (if they use different class naming) */
+[class*="-column-device_id"] {
+  max-width: 200px !important;
+}
+
+[class*="-column-alarm_message"] {
+  max-width: 250px !important;
+}
+
+[class*="-column-local_time"],
+[class*="-column-Date"],
+[class*="-column-Time"] {
+  max-width: 120px !important;
+}
+
+[class*="-column-mon_unit"],
+[class*="-column-care_unit"] {
+  max-width: 200px !important;
+}
+
+/* Alternative approach using direct attribute selectors */
+/* This ensures the styles apply regardless of class naming conventions */
+table[odxDataTable] {
+  table-layout: fixed; /* Use fixed table layout for better width control */
+  min-width: 100%; /* Ensure table takes at least full width */
+  width: max-content; /* Allow table to grow based on content */
+  max-width: none; /* Remove any max-width constraints */
+}
+
+table[odxDataTable] td {
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Add specific width constraints for columns that don't have them yet */
+.cdk-column-row_id,
+.cdk-column-Hour,
+.cdk-column-aborted {
+  max-width: 80px !important; /* Smaller width for simple columns */
+}
+
+.cdk-column-onset_tick,
+.cdk-column-change_tick,
+.cdk-column-param_value,
+.cdk-column-param_upper_lim,
+.cdk-column-param_lower_lim,
+.cdk-column-Limit_Violation_Value {
+  max-width: 100px !important;
+}
+
+/* Alternative selectors for odx-specific class naming */
+[class*="-column-row_id"],
+[class*="-column-Hour"],
+[class*="-column-aborted"] {
+  max-width: 80px !important;
+}
+
+[class*="-column-onset_tick"],
+[class*="-column-change_tick"],
+[class*="-column-param_value"],
+[class*="-column-param_upper_lim"],
+[class*="-column-param_lower_lim"],
+[class*="-column-Limit_Violation_Value"] {
+  max-width: 100px !important;
+}

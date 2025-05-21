@@ -1,15 +1,15 @@
 import {ChangeDetectionStrategy, Component, computed, Input, input, OnDestroy, OnInit, signal} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { PatientService } from '../patient.service';
-import { CommonModule } from '@angular/common';
-import { saveAs } from 'file-saver';
-import { ButtonComponent } from  '@odx/angular/components/button';
-import { MainMenuModule } from  '@odx/angular/components/main-menu';
+import {HttpClientModule} from '@angular/common/http';
+import {PatientService} from '../patient.service';
+import {CommonModule} from '@angular/common';
+import {saveAs} from 'file-saver';
+import {ButtonComponent} from '@odx/angular/components/button';
+import {MainMenuModule} from '@odx/angular/components/main-menu';
 import {AreaHeaderComponent} from '@odx/angular/components/area-header';
-import { TableVariant } from '@odx/angular/components/table';
+import {TableVariant} from '@odx/angular/components/table';
 import {DataTableModule} from '@odx/angular/components/data-table';
-import { PageChangeEvent, PaginatorModule } from '@odx/angular/components/paginator';
+import {PageChangeEvent, PaginatorModule} from '@odx/angular/components/paginator';
 import {FormFieldComponent, FormFieldVariant} from '@odx/angular/components/form-field';
 import {DatepickerModule} from '@odx/angular/components/datepicker';
 import {SelectComponent, SelectModule, SelectOptionComponent} from '@odx/angular/components/select';
@@ -44,11 +44,13 @@ interface TableData {
   change_tick: string;
   aborted: string;
 }
+
 interface OptionValue {
   label: string;
   value: number;
   disabled: boolean;
 }
+
 @Component({
   selector: 'app-patient',
   standalone: true,
@@ -73,18 +75,18 @@ interface OptionValue {
   styleUrls: ['./patient.component.css']
 })
 export class PatientComponent {
-  selectOptions:OptionValue[] = [
-    { value: 5, label: '5', disabled: false },
-    { value: 10, label: '10', disabled: false },
-    { value: 20, label: '20', disabled: false },
-    { value: 50, label: '50', disabled: false },
-    { value: 100, label: '100', disabled: false }
+  selectOptions: OptionValue[] = [
+    {value: 5, label: '5', disabled: false},
+    {value: 10, label: '10', disabled: false},
+    {value: 20, label: '20', disabled: false},
+    {value: 50, label: '50', disabled: false},
+    {value: 100, label: '100', disabled: false}
   ];
-  pageSizeValue = this.selectOptions[1];
+  pageSizeValue: OptionValue = this.selectOptions[1];
   patientData = signal<any[]>([]);
   errorMessage = '';
   page = 1;
-  pageSize =  this.pageSizeValue.value;
+  pageSize: number = this.pageSizeValue.value;
   totalPages = 0;
   totalItems = 0;
   previousPageIndex = 0; // 默认第一页索引通常为0
@@ -94,12 +96,14 @@ export class PatientComponent {
     patientid: new FormControl('', [Validators.required]),
     startdate: new FormControl(new Date(), [Validators.required]),
     enddate: new FormControl(new Date(), [Validators.required]),
-    pageSizeValue: new FormControl(this.pageSizeValue, [Validators.required]),});
+    pageSizeValue: new FormControl<OptionValue | null>(this.pageSizeValue, [Validators.required]),
+  });
 
 
   constructor(private patientService: PatientService) {
 
   }
+
   private subscription = new Subscription();
 
   public variantValue = TableVariant.STRIPED;
@@ -158,11 +162,10 @@ export class PatientComponent {
   public dataSource = computed<TableData[]>(() => this.filteredData());
 
 
-  public displayedColumns = ['row_id','device_id','local_time', 'Date', 'Time', 'Hour', 'bed_label', 'pat_ID', 'mon_unit',
+  public displayedColumns = ['row_id', 'device_id', 'local_time', 'Date', 'Time', 'Hour', 'bed_label', 'pat_ID', 'mon_unit',
     'care_unit', 'alarm_grade', 'alarm_state', 'Alarm Grade 2', 'alarm_message', 'param_id', 'param_value',
     'param_uom', 'param_upper_lim', 'param_lower_lim', 'Limit_Violation_Type', 'Limit_Violation_Value', 'sourcechannel',
     'onset_tick', 'alarm_duration', 'change_time(UTC)', 'change_tick', 'aborted'];
-
 
 
   @Input()
@@ -184,7 +187,7 @@ export class PatientComponent {
     this.errorMessage = '';
     this.patientData.set([]);
 
-    const { patientid, startdate, enddate } = this.formGroup.value;
+    const {patientid, startdate, enddate} = this.formGroup.value;
     // @ts-ignore
     const formattedStartDate = formatDateToSql(startdate);
     // @ts-ignore
@@ -251,14 +254,16 @@ export class PatientComponent {
   }
 
   handlePageSizeChange() {
-    // 当用户更改每页数量时，重置到第一页并重新加载数据
-    this.pageSize = this.pageSizeValue.value;
+    // Update pageSizeValue with the current form control value
+    this.pageSize = this.formGroup.get('pageSizeValue')?.value?.value ?? this.selectOptions[1].value;
+    console.log(this.pageSizeValue);
+
     this.page = 1;
     this.queryPatient(this.page);
   }
 
   exportAllDataToExcel() {
-    const { patientid, startdate, enddate } = this.formGroup.value;
+    const {patientid, startdate, enddate} = this.formGroup.value;
     // @ts-ignore
     const formattedStartDate = formatDateToSql(startdate);
     // @ts-ignore
@@ -275,8 +280,10 @@ export class PatientComponent {
     });
   }
 }
+
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = 'xlsx';
+
 function formatDateToSql(date: Date): string {
   return date.toISOString().slice(0, 10).replace('T', ' ');
 }

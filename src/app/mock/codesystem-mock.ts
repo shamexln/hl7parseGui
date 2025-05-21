@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {Observable, of} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,38 +9,53 @@ export class CodesystemMockService {
   private mockCodesystemData = [
     {
       id: 1,
-      code: "LOINC",
-      display: "Logical Observation Identifiers Names and Codes",
-      version: "2.73",
-      description: "LOINC database provides a set of universal names and ID codes for identifying laboratory and clinical test results."
+      codesystem_id: "1",
+      codesystem_name: "300",
+      codesystem_filename: "300_map.xml",
+      codesystem_tablename: "hl7_codesystem_300",
+      codesystem_isdeault: "true",
+      codesystem_istrue: "true",
+      codesystem_xml: "true",
     },
     {
       id: 2,
-      code: "SNOMED-CT",
-      display: "SNOMED Clinical Terms",
-      version: "International 2023-07-31",
-      description: "SNOMED CT is a systematically organized computer processable collection of medical terms providing codes, terms, synonyms and definitions used in clinical documentation and reporting."
+      codesystem_id: "2",
+      codesystem_name: "400",
+      codesystem_filename: "400_map.xml",
+      codesystem_tablename: "hl7_codesystem_400",
+      codesystem_isdeault: "true",
+      codesystem_istrue: "true",
+      codesystem_xml: "true",
     },
     {
       id: 3,
-      code: "ICD-10",
-      display: "International Classification of Diseases, 10th Revision",
-      version: "2023",
-      description: "The ICD-10 is the 10th revision of the International Statistical Classification of Diseases and Related Health Problems, a medical classification list by the World Health Organization."
+      codesystem_id: "3",
+      codesystem_name: "500",
+      codesystem_filename: "500_map.xml",
+      codesystem_tablename: "hl7_codesystem_500",
+      codesystem_isdeault: "true",
+      codesystem_istrue: "true",
+      codesystem_xml: "true",
     },
     {
       id: 4,
-      code: "RxNorm",
-      display: "RxNorm",
-      version: "202308",
-      description: "RxNorm provides normalized names for clinical drugs and links its names to many of the drug vocabularies commonly used in pharmacy management and drug interaction software."
+      codesystem_id: "4",
+      codesystem_name: "600",
+      codesystem_filename: "600_map.xml",
+      codesystem_tablename: "hl7_codesystem_600",
+      codesystem_isdeault: "true",
+      codesystem_istrue: "true",
+      codesystem_xml: "true",
     },
     {
       id: 5,
-      code: "CPT",
-      display: "Current Procedural Terminology",
-      version: "2023",
-      description: "The Current Procedural Terminology (CPT) code set is a medical code set maintained by the American Medical Association."
+      codesystem_id: "5",
+      codesystem_name: "700",
+      codesystem_filename: "700_map.xml",
+      codesystem_tablename: "hl7_codesystem_700",
+      codesystem_isdeault: "true",
+      codesystem_istrue: "true",
+      codesystem_xml: "true",
     }
   ];
 
@@ -50,5 +65,28 @@ export class CodesystemMockService {
    */
   getCodesystem(): Observable<any[]> {
     return of(this.mockCodesystemData);
+  }
+
+  /**
+   * Get mock codesystem detail data by ID
+   * @param id The ID of the codesystem to retrieve
+   * @returns Observable of mock codesystem detail data
+   */
+  getCodesystemDetail(id: string): Observable<any> {
+    const codesystem = this.mockCodesystemData.find(cs => cs.id.toString() === id);
+
+    if (codesystem) {
+      // Return a copy of the codesystem with additional detail information
+      return of({
+        ...codesystem,
+        detail_description: `Detailed description for codesystem ${codesystem.codesystem_name}`,
+        last_updated: new Date().toISOString(),
+        version: '1.0.0',
+        status: 'Active'
+      });
+    } else {
+      // Return null if codesystem not found
+      return of(null);
+    }
   }
 }

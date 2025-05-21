@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ButtonComponent, ButtonVariant} from '@odx/angular/components/button';
 import {CodesystemService} from '../codesystem.service';
 import {CodesystemMockService} from '../mock/codesystem-mock';
 import {AreaHeaderComponent} from '@odx/angular/components/area-header';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-codesystem',
@@ -17,10 +18,10 @@ export class CodesystemComponent implements OnInit {
 
   public variantValue = ButtonVariant.SECONDARY;
   public codesystems: any[] = [];
-  public loading = false;
-  public error: string | null = null;
 
-  constructor(private codesystemService: CodesystemMockService) {}
+  constructor(private codesystemService: CodesystemService, private router: Router
+  ) {
+  }
 
   ngOnInit(): void {
     // Load codesystems when component initializes
@@ -28,25 +29,22 @@ export class CodesystemComponent implements OnInit {
   }
 
   fetchCodesystems() {
-    this.loading = true;
-    this.error = null;
 
     this.codesystemService.getCodesystem().subscribe({
       next: (response) => {
         this.codesystems = response;
-        this.loading = false;
         console.log('Codesystem data:', response);
       },
       error: (error) => {
-        this.error = 'Error fetching codesystem data';
-        this.loading = false;
         console.error('Error fetching codesystem data:', error);
       }
     });
   }
 
-  startEditing() {
-    console.log('Edit button clicked');
-    // Implement editing functionality here
+
+  getCodesystemDetial(id: string) {
+
+    this.router.navigate(['/codesystem-detail', id]);
   }
+
 }
