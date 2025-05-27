@@ -14,6 +14,7 @@ import {FormFieldComponent, FormFieldVariant} from '@odx/angular/components/form
 import {DatepickerModule} from '@odx/angular/components/datepicker';
 import {SelectComponent, SelectModule, SelectOptionComponent} from '@odx/angular/components/select';
 import {Subscription} from 'rxjs';
+import {CoreModule} from '@odx/angular';
 
 interface TableData {
   row_id: string;
@@ -56,6 +57,7 @@ interface OptionValue {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    CoreModule,
     CommonModule,
     FormsModule,
     ButtonComponent,
@@ -74,7 +76,7 @@ interface OptionValue {
   templateUrl: './patient.component.html',
   styleUrls: ['./patient.component.css']
 })
-export class PatientComponent {
+export class PatientComponent implements OnInit {
   selectOptions: OptionValue[] = [
     {value: 5, label: '5', disabled: false},
     {value: 10, label: '10', disabled: false},
@@ -82,7 +84,7 @@ export class PatientComponent {
     {value: 50, label: '50', disabled: false},
     {value: 100, label: '100', disabled: false}
   ];
-  pageSizeValue: OptionValue = this.selectOptions[1];
+  pageSizeValue: OptionValue = this.selectOptions[4];
   patientData = signal<any[]>([]);
   errorMessage = '';
   page = 1;
@@ -102,6 +104,10 @@ export class PatientComponent {
 
   constructor(private patientService: PatientService) {
 
+  }
+
+  ngOnInit(): void {
+    this.queryPatient(1);
   }
 
   private subscription = new Subscription();

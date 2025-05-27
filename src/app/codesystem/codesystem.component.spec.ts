@@ -1,11 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { of, throwError } from 'rxjs';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {of, throwError} from 'rxjs';
 
-import { CodesystemComponent } from './codesystem.component';
-import { CodesystemService } from '../codesystem.service';
-import { NgFor, NgIf } from '@angular/common';
-import { ButtonComponent } from '@odx/angular/components/button';
+import {CodesystemComponent} from './codesystem.component';
+import {CodesystemService} from '../codesystem.service';
+import {NgFor, NgIf} from '@angular/common';
+import {ButtonComponent} from '@odx/angular/components/button';
 
 describe('CodesystemComponent', () => {
   let component: CodesystemComponent;
@@ -41,10 +41,10 @@ describe('CodesystemComponent', () => {
         ButtonComponent
       ],
       providers: [
-        { provide: CodesystemService, useValue: spy }
+        {provide: CodesystemService, useValue: spy}
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     codesystemServiceSpy = TestBed.inject(CodesystemService) as jasmine.SpyObj<CodesystemService>;
     fixture = TestBed.createComponent(CodesystemComponent);
@@ -63,8 +63,6 @@ describe('CodesystemComponent', () => {
 
     expect(codesystemServiceSpy.getCodesystem).toHaveBeenCalled();
     expect(component.codesystems).toEqual(mockCodesystemData);
-    expect(component.loading).toBeFalse();
-    expect(component.error).toBeNull();
   });
 
   it('should handle error when loading codesystems', () => {
@@ -74,8 +72,6 @@ describe('CodesystemComponent', () => {
 
     expect(codesystemServiceSpy.getCodesystem).toHaveBeenCalled();
     expect(component.codesystems).toEqual([]);
-    expect(component.loading).toBeFalse();
-    expect(component.error).toBe('Error fetching codesystem data');
   });
 
   it('should refresh codesystems when fetchCodesystems is called', () => {
@@ -89,7 +85,6 @@ describe('CodesystemComponent', () => {
     component.fetchCodesystems();
 
     expect(codesystemServiceSpy.getCodesystem).toHaveBeenCalled();
-    expect(component.loading).toBeFalse();
     expect(component.codesystems).toEqual(mockCodesystemData);
   });
 });

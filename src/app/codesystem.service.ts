@@ -12,6 +12,13 @@ export class CodesystemService {
   constructor(private http: HttpClient) {
   }
 
+
+  public updateCodesystem(codesystemName: string, changedData: any[]): Observable<any> {
+    const body = {codesystemName, changedData};
+    return this.http.post<any[]>('/api/updatecodesystem', body);
+
+  }
+
   public getCodesystem(): Observable<any[]> {
     return this.http.get<any | any[]>(`${this.apiUrl}`).pipe(
       map((response: any | any[]) => Array.isArray(response) ? response : [response]), // Ensure always returns an array
@@ -21,12 +28,13 @@ export class CodesystemService {
   }
 
 
-  public getPaginatedCodesystemDetailById(id: string, page: number, pageSize: number): Observable<any> {
+  public getPaginatedCodesystemDetailById(id: string, codesytemName: string, page: number, pageSize: number): Observable<any> {
     const url = id
       ? `${this.apiUrl}-detail/paginated/${encodeURIComponent(id)}`
       : `${this.apiUrl}-detail/paginated`;
 
     let params = new HttpParams()
+      .set('codesystemname', codesytemName)
       .set('page', page.toString())
       .set('pageSize', pageSize.toString());
 

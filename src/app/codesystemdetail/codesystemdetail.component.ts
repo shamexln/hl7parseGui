@@ -6,9 +6,14 @@ import {PageChangeEvent, PaginatorModule} from '@odx/angular/components/paginato
 import {DataTableModule} from '@odx/angular/components/data-table';
 import {TableVariant} from '@odx/angular/components/table';
 import {FormFieldModule} from '@odx/angular/components/form-field';
+import {ButtonComponent, ButtonVariant} from '@odx/angular/components/button';
+import {FormsModule} from '@angular/forms';
+import {debounceTime, Subject} from 'rxjs';
+
 
 interface TableData {
   row_id: string;
+  tagkey: string;
   observationtype: string;
   datatype: string;
   encode: string;
@@ -28,6 +33,8 @@ interface TableData {
     PaginatorModule,
     DataTableModule,
     FormFieldModule,
+    ButtonComponent,
+    FormsModule,
   ],
   templateUrl: './codesystemdetail.component.html',
   standalone: true,
@@ -36,10 +43,12 @@ interface TableData {
 export class CodesystemdetailComponent implements OnInit {
   public filterText = signal<string>('');
   public codesystemData = signal<any[]>([]);
+  public originalcodesystemData: TableData[] = [];
   public errorMessage = '';
   public id: string = '';
+  public codesystemName: string = '';
   public page = 1;
-  public pageSize = 20;
+  public pageSize = 1000;
   public totalPages = 0;
   public totalItems = 0;
   previousPageIndex = 0; // 默认第一页索引通常为0
@@ -48,13 +57,21 @@ export class CodesystemdetailComponent implements OnInit {
     length: this.totalItems,
     pageIndex: this.page,
   });
+  public variantValue = ButtonVariant.SECONDARY;
   public tablevariantValue = TableVariant.STRIPED;
+  private descriptionInput$ = new Subject<{ tagkey: string, val: string }>();
 
   constructor(
     private codesystemService: CodesystemService,
     private router: Router,
     private route: ActivatedRoute
   ) {
+    this.descriptionInput$.pipe(
+      debounceTime(500) // 等待500毫秒（可调）
+    ).subscribe(({tagkey, val}) => {
+      this.onEditDescription(tagkey, val);
+    });
+
   }
 
   private filteredData(): TableData[] {
@@ -66,6 +83,7 @@ export class CodesystemdetailComponent implements OnInit {
       codesystemDataArray.forEach((codesystem: any) => {
         data.push({
           row_id: codesystem.id || '',
+          tagkey: codesystem.tagkey || '',
           observationtype: codesystem.observationtype || '',
           datatype: codesystem.datatype || '',
           encode: codesystem.encode || '',
@@ -87,22 +105,66 @@ export class CodesystemdetailComponent implements OnInit {
   }
 
   public dataSource = computed<TableData[]>(() => this.filteredData().filter((data) =>
-    data.encode.toLowerCase().includes(this.filterText().toLowerCase())));
+    data.description.toLowerCase().includes(this.filterText().toLowerCase())));
 
 
   public displayedColumns = ['row_id', 'observationtype', 'datatype', 'encode', 'parameterlabel', 'encodesystem', 'subid', 'description',
     'source', 'channel', 'channelid'];
 
+
   ngOnInit(): void {
     // Get the id parameter from the route
     this.route.paramMap.subscribe(params => {
       this.id = params.get('id') || '';
-      if (this.id) {
-        this.queryCodesystemDetail(this.id);
-      }
+      console.log('id:', this.id);
     });
+
+    this.route.queryParamMap.subscribe(params => {
+      this.codesystemName = params.get('codesystemname') || '';
+      console.log('codesystemname:', this.codesystemName);
+    });
+
+    if (this.id && this.codesystemName) {
+      this.queryCodesystemDetail(this.id, this.codesystemName);
+    }
   }
 
+  onDescriptionInput(tagkey: string, val: string) {
+    // 输入变化时调用
+    this.descriptionInput$.next({tagkey, val});
+  }
+
+
+  onEditDescription(tagkey: string, newVal: string) {
+    // find the data from this.originalcodesystemData by tagkey
+    const data = this.originalcodesystemData.find((item: any) => item.tagkey === tagkey);
+    if (data?.description != newVal) {
+      // deep copy data to new variant named newdata
+      const newdata = JSON.parse(JSON.stringify(data));
+      newdata.description = newVal;
+      const arr: (TableData | undefined)[] = Array.of(newdata);
+      if (Array.isArray(arr) && arr.every(item => item !== undefined)) {
+        this.submitChanges(arr);
+      }
+    }
+  }
+
+  submitChanges(data: TableData[]) {
+
+    console.log('submit changed data:');
+
+    this.codesystemService.updateCodesystem(this.codesystemName, data).subscribe(result => {
+      console.log('update codesystem successfully:', result);
+      // pop-up dialog tell user how many data are updaed.
+      if (result.success) {
+        window.alert(`Total ${result.updated} data are updated.`);
+
+      }
+      this.queryCodesystemDetail(this.id, this.codesystemName, this.page);
+
+    });
+
+  }
 
   onPageChange(event: PageChangeEvent): void {
     const currentPageIndex = event.pageIndex;
@@ -128,19 +190,21 @@ export class CodesystemdetailComponent implements OnInit {
       ,
     });
 
-    this.queryCodesystemDetail(this.id, this.page); // 调用API重新加载对应页的数据
+    this.queryCodesystemDetail(this.id, this.codesystemName, this.page); // 调用API重新加载对应页的数据
   }
 
-  queryCodesystemDetail(id: string, page: number = 1) {
+  queryCodesystemDetail(id: string, codesystemname: string, page: number = 1) {
     this.errorMessage = '';
     this.codesystemData.set([]);
 
-    this.codesystemService.getPaginatedCodesystemDetailById(id, page, this.pageSize).subscribe({
+    this.codesystemService.getPaginatedCodesystemDetailById(id, codesystemname, page, this.pageSize).subscribe({
       next: (data) => {
         const result = Array.isArray(data) && data.length > 0 ? data[0] : null;
         if (result) {
 
           this.codesystemData.set(result.rows || []); // 设置新数据（响应式的信号更新）
+          this.originalcodesystemData = JSON.parse(JSON.stringify(result.rows));
+
           this.page = result.page;
           this.pageSize = result.pageSize;
           this.totalPages = result.totalPages;

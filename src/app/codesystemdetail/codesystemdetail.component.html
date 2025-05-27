@@ -1,9 +1,9 @@
 <div class="odx-app-page">
   <odx-area-header size="large">
-    {{ id }}
+    {{ codesystemName }}
   </odx-area-header>
 
-  <div class="grid">
+  <div class="odx-app-page__content" class="grid">
     <div class="grid-container">
       <div>
         <table odxDataTable [variant]="tablevariantValue" [dataSource]="dataSource()"
@@ -26,13 +26,17 @@
           </ng-container>
 
           <ng-container odxColumnDef="encode">
-            <th odxHeaderCell *odxHeaderCellDef>
+            <th odxHeaderCell *odxHeaderCellDef>Encode</th>
+            <td odxCell *odxCellDef="let element">{{ element.encode }}</td>
+            <!--<th odxHeaderCell *odxHeaderCellDef>
               <odx-form-field>
                 <input #filter placeholder="Encode" (input)="filterText.set(filter.value)" type="text"
                        odxFormFieldControl/>
               </odx-form-field>
             </th>
-            <td odxCell *odxCellDef="let element">{{ element.encode }}</td>
+            <td odxCell *odxCellDef="let element">
+              <input [(ngModel)]="element.encode" (ngModelChange)="onEditEncode(element.tagkey, element.encode)"/>
+            </td>-->
           </ng-container>
 
           <ng-container odxColumnDef="parameterlabel">
@@ -51,8 +55,17 @@
           </ng-container>
 
           <ng-container odxColumnDef="description">
-            <th odxHeaderCell *odxHeaderCellDef>Description</th>
-            <td odxCell *odxCellDef="let element">{{ element.description }}</td>
+
+            <th odxHeaderCell *odxHeaderCellDef>
+              <odx-form-field>
+                <input #filter placeholder="Description" (input)="filterText.set(filter.value)" type="text"
+                       odxFormFieldControl/>
+              </odx-form-field>
+            </th>
+            <td odxCell *odxCellDef="let element">
+              <input [(ngModel)]="element.description"
+                     (ngModelChange)="onDescriptionInput(element.tagkey, element.description)"/>
+            </td>
           </ng-container>
 
           <ng-container odxColumnDef="source">
@@ -76,14 +89,31 @@
 
         </table>
       </div>
-      <odx-paginator
-        [pageSize]="pageSize"
-        [length]="totalItems"
-        [pageIndex]="page - 1"
-        (pageChanged)="onPageChange($event)"
-      />
+
 
     </div>
   </div>
+  <div class="odx-app-page__footer">
+    <odx-paginator
+      [pageSize]="pageSize"
+      [length]="totalItems"
+      [pageIndex]="page - 1"
+      (pageChanged)="onPageChange($event)"
+    />
+  </div>
+
+
+  <!--  <div>
+      <div odxLayout="grid horizontal-end">
+        <div odxLayout="1 offset-11 ">
+          <button odxButton [variant]="variantValue" style="margin-right: 24px;">Copy</button>
+          <button odxButton [variant]="variantValue">Back</button>
+
+        </div>
+
+
+      </div>
+    </div>-->
+
 
 </div>

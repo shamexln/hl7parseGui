@@ -42,9 +42,11 @@ export class CodesystemComponent implements OnInit {
   }
 
 
-  getCodesystemDetial(id: string) {
+  getCodesystemDetial(id: string, codesystemname: string) {
 
-    this.router.navigate(['/codesystem-detail', id]);
+    this.router.navigate(
+      ['/codesystem-detail', id],
+      {queryParams: {codesystemname: codesystemname}}
+    );
   }
-
 }
