@@ -6,7 +6,7 @@ import {PageChangeEvent, PaginatorModule} from '@odx/angular/components/paginato
 import {DataTableModule} from '@odx/angular/components/data-table';
 import {TableVariant} from '@odx/angular/components/table';
 import {FormFieldModule} from '@odx/angular/components/form-field';
-import {ButtonComponent, ButtonVariant} from '@odx/angular/components/button';
+import {ButtonVariant} from '@odx/angular/components/button';
 import {FormsModule} from '@angular/forms';
 import {debounceTime, Subject} from 'rxjs';
 
@@ -33,7 +33,6 @@ interface TableData {
     PaginatorModule,
     DataTableModule,
     FormFieldModule,
-    ButtonComponent,
     FormsModule,
   ],
   templateUrl: './codesystemdetail.component.html',

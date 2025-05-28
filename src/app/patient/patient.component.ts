@@ -291,6 +291,17 @@ const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.
 const EXCEL_EXTENSION = 'xlsx';
 
 function formatDateToSql(date: Date): string {
-  return date.toISOString().slice(0, 10).replace('T', ' ');
+  const year = date.getFullYear();
+
+  // getMonth() 返回的月份是从 0 开始的 (0 代表一月), 所以需要加 1
+  // toString().padStart(2, '0') 用于确保月份是两位数 (例如 '05' 而不是 '5')
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+
+  // getDate() 返回的是月份中的第几天
+  // toString().padStart(2, '0') 用于确保天数是两位数
+  const day = date.getDate().toString().padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+
 }
 

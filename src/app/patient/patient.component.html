@@ -78,11 +78,6 @@
     <table odxDataTable [variant]="variantValue" [dataSource]="dataSource()"
            [displayedColumns]="displayedColumns">
 
-      <ng-container odxColumnDef="row_id">
-        <th odxHeaderCell *odxHeaderCellDef>Row Index</th>
-        <td odxCell *odxCellDef="let element">{{ element.row_id }}</td>
-      </ng-container>
-
       <ng-container odxColumnDef="device_id">
         <th odxHeaderCell *odxHeaderCellDef>Monitor GUID</th>
         <td odxCell *odxCellDef="let element">{{ element.device_id }}</td>
